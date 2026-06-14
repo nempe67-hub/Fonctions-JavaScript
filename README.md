@@ -6,9 +6,9 @@ et placé ce code dans des balises html; pour la partie design, nous avons utili
 
 Ces fonctions au nombre de 9 sont regroupées et 3 catégories:
 
-// --------------------------------------------------------------------------------------
-       A - CATEGORIE 1: LES FONCTIONS DE MANIPULATIONS DE CHAÎNES DE CARACTERES.
-// --------------------------------------------------------------------------------------
+
+A - CATEGORIE 1: LES FONCTIONS DE MANIPULATIONS DE CHAÎNES DE CARACTERES.
+
 1 - La fonction Inverser_Chaines_de_Caractères: 
 Elle permet d'inverser les caractères saisis c'est à dire d'afficher les caractàres 
 dans l'ordre inverse de leur saisie, du dernier jusqu'au premier.
@@ -20,9 +20,9 @@ les espaces n'étant pas pris en compte.
 3 - La Fonction Premiere_Lettre_de_Mots_en_Majuscule:
 Elle sert à mettre en majuscule la première lettre de chaque mot d’une phrase.
 
-// ---------------------------------------------------------------------------------
-        B - CATEGORIE 2: LES FONCTIONS DE TABLEAU.
-// ---------------------------------------------------------------------------------
+
+B - CATEGORIE 2: LES FONCTIONS DE TABLEAU.
+
 4 - La fonction Maximum_et_Minimum: 
 Elle permet de déterminer les valeurs maximale et minimale dans un tableau de nombres.
 
@@ -32,9 +32,9 @@ Elle calcule la somme de tous les éléments (c'est-à-dire des nombres) d'un ta
 6 - La Fonction Filter_les_Eléments:
 Elle filtre ou sélectionne les éléments d’un tableau en fonction d’une condition définie par nous.
 
-// -----------------------------------------------------------------------------------
-         C - CATEGORIE 3: LES FONCTIONS MATHEMATIQUES.
-// ------------------------------------------------------------------------------------
+
+C - CATEGORIE 3: LES FONCTIONS MATHEMATIQUES.
+
 7 - La fonction Factorielle_d'un_nombre: 
 Elle est utlisée pour calculer la factorielle d'un nombre donné.
 
