@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformateur de Texte</title>
+    <style>
+        /* === STYLE GLOBAL DE LA PAGE === */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Permet de pousser le pied de page tout en bas */
+        }
+
+        /* === STYLE DU CONTENEUR PRINCIPAL (FORMULAIRE) === */
+        .container {
+            background-color: #ffffff;
+            max-width: 600px;
+            margin: 50px auto; /* Centre le conteneur horizontalement */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ombre douce autour du bloc */
+            flex: 1; /* Permet d'occuper l'espace disponible au-dessus du footer */
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* === STYLE DES ELEMENTS DU FORMULAIRE === */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Zone de saisie plein écran dans son bloc */
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            resize: vertical; /* Permet à l'utilisateur d'agrandir en hauteur seulement */
+            font-size: 16px;
+            box-sizing: border-box; /* Évite que le padding ne déforme la largeur */
+            transition: border-color 0.3s;
+        }
+
+        /* Changement de couleur de la bordure au clic */
+        textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        /* === STYLE DES BOUTONS === */
+        .btn-group {
+            display: flex;
+            gap: 15px; /* Espace entre les deux boutons */
+        }
+
+        button {
+            flex: 1; /* Donne la même largeur aux deux boutons */
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        /* Bouton Transformer (Vert) */
+        .btn-transform {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-transform:hover {
+            background-color: #45a049;
+        }
+
+        /* Bouton Effacer (Rouge/Gris foncé) */
+        .btn-clear {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background-color: #da190b;
+        }
+
+        /* Effet de clic enfoncé sur les boutons */
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* === STYLE DU PIED DE PAGE DÉFILANT === */
+        footer {
+            background-color: #2c3e50;
+            color: #ffffff;
+            overflow: hidden; /* Cache tout ce qui dépasse de la zone d'affichage */
+            white-space: nowrap; /* Empêche le texte de revenir à la ligne */
+            padding: 15px 0;
+            width: 100%;
+        }
+
+        /* L'animation de défilement */
+        .marquee-text {
+            display: inline-block;
+            padding-left: 100%; /* Démarre l'animation complètement à droite */
+            animation: defilement 20s linear infinite; /* Boucle infinie de 20 secondes */
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* Définition des étapes de l'animation */
+        @keyframes defilement {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); } /* Allez jusqu'à disparition totale à gauche */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Conteneur principal du formulaire -->
+    <div class="container">
+        <h1>Capitaliseur de Mots</h1>
+        
+        <form id="monFormulaire" onsubmit="event.preventDefault();">
+            <div class="form-group">
+                <label for="phraseInput">Saisir une Phrase ou un Texte:</label>
+                <textarea id="phraseInput" placeholder="Tapez votre texte ici..."></textarea>
+            </div>
+
+            <div class="btn-group">
+                <!-- Premier bouton : déclenche la transformation -->
+                <button type="button" class="btn-transform" onclick="transformerTexte()">Mettre en majuscule</button>
+                <!-- Second bouton : vide la zone de texte -->
+                <button type="button" class="btn-clear" onclick="effacerTexte()">Effacer</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Pied de page avec le texte défilant requis -->
+    <footer>
+        <div class="marquee-text">
+            Projet JavaScript 2 : Fonction Premiere Lettre de Mots en Majuscule ------ Conception logiciel: Juin 2026 ------ NEMPE MOBIO SYLVAIN, Etudiant en Web Developpement à GomyCode
+        </div>
+    </footer>
+
+    <!-- === ZONE JAVASCRIPT === -->
+    <script>
+        /**
+         * Récupère le texte de la zone de saisie, applique la transformation
+         * et réinjecte le résultat directement dans la même zone.
+         */
+        function transformerTexte() {
+            // 1. Récupération de l'élément textarea via son ID
+            const zoneTexte = document.getElementById('phraseInput');
+            
+            // 2. Extraction de la valeur textuelle saisie
+            const phrase = zoneTexte.value;
+
+            // 3. Sécurité : Si le champ est totalement vide, on arrête la fonction
+            if (!phrase.trim()) {
+                return;
+            }
+
+            // 4. Découpage de la phrase en un tableau de mots isolés par les espaces
+            const mots = phrase.split(' ');
+
+            // 5. Transformation de chaque mot un par un via map()
+            const motsModifies = mots.map(mot => {
+                // Gestion des espaces multiples consécutifs
+                if (mot.length === 0) {
+                    return mot;
+                }
+                // Récupère l'index 0 en majuscule + le reste de l'index 1 à la fin du mot
+                return mot.charAt(0).toUpperCase() + mot.slice(1);
+            });
+
+            // 6. Fusion des mots modifiés avec un espace pour reconstruire la phrase
+            const phraseFinale = motsModifies.join(' ');
+
+            // 7. Mise à jour de la zone de saisie avec le nouveau texte transformé
+            zoneTexte.value = phraseFinale;
+        }
+
+        /**
+         * Vide intégralement la zone de texte du formulaire
+         */
+        function effacerTexte() {
+            // Cible la zone et lui assigne une chaîne de caractères vide
+            document.getElementById('phraseInput').value = '';
+
+            // Remet automatiquement le curseur dans le champ de saisie  NB:REVOIR CETTE PARTIE DU CODE QUI NE MARCHE PAS
+            zoneTexte.focus();
+        }
+
+    </script>
+</body>
+</html>

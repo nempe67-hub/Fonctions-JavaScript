@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérificateur de Nombre Premier</title>
+    <style>
+        /* Styles Généraux */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Conteneur Principal */
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Formulaire */
+        .card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        /* Zone de Saisie */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        /* Boutons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            flex: 1;
+        }
+
+        .btn-check {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-check:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-clear {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background-color: #c0392b;
+        }
+
+        /* Zone d'Affichage du Résultat */
+        #resultat {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 27px;
+        }
+
+        .success {
+            color: #27ae60;
+        }
+
+        .error {
+            color: #c0392b;
+        }
+
+        /* Pied de Page Défilant */
+        footer {
+            background-color: #2c3e50;
+            color: #ffffff;
+            padding: 15px 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee {
+            display: inline-block;
+            padding-left: 100%;
+            animation: defilement 20s linear infinite;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes defilement {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h2>Nombre Premier ?</h2>
+            
+            <div class="form-group">
+                <label for="nombre">Saisir un nombre entier</label>
+                <input type="number" id="nombre" placeholder="Ex: 7" min="0">
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn-check" onclick="gererVerification()">Vérifier</button>
+                <button type="button" class="btn-clear" onclick="effacerSaisie()">Effacer</button>
+            </div>
+
+            <div id="resultat"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="marquee">
+            Projet JavaScript 2: Fonction Vérifier si Nombre Premier. ----- Conception : Juin 2026 ------ NEMPE MOBIO SYLVAIN, Etudiant en Web Developpement à GomyCode.
+        </div>
+    </footer>
+
+    <script>
+        // Fonction algorithmique de vérification
+        function estPremier(n) {
+            if (n <= 1) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            
+            // Vérification des diviseurs impairs jusqu'à la racine carrée
+            for (let i = 3; i <= Math.sqrt(n); i += 2) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+
+        // Fonction liée au bouton de vérification
+        function gererVerification() {
+            const input = document.getElementById('nombre');
+            const resultatDiv = document.getElementById('resultat');
+            const valeur = input.value;
+
+            // Validation de la saisie
+            if (valeur === "") {
+                resultatDiv.innerHTML = "Veuillez saisir un nombre.";
+                resultatDiv.className = "error";
+                return;
+            }
+
+            const nombre = parseInt(valeur, 10);
+
+            // Traitement et affichage du message demandé
+            if (estPremier(nombre)) {
+                resultatDiv.innerHTML = "Le nombre saisi est premier";
+                resultatDiv.className = "success";
+            } else {
+                resultatDiv.innerHTML = "Le nombre saisi n'est pas premier";
+                resultatDiv.className = "error";
+            }
+        }
+
+        // Fonction liée au bouton d'effacement
+        function effacerSaisie() {
+            document.getElementById('nombre').value = "";
+            const resultatDiv = document.getElementById('resultat');
+            resultatDiv.innerHTML = "";
+            resultatDiv.className = "";
+        }
+    </script>
+
+</body>
+</html>

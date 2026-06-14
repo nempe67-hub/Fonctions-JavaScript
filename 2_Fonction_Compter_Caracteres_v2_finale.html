@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyseur de Texte - Version Sans Espaces</title>
+    <style>
+        /* --- STYLE GLOBAL DE LA PAGE --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 40px 20px 80px 20px; /* Ajout de padding en bas pour ne pas masquer le texte par la signature fixe */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* --- STYLE DU CONTENEUR PRINCIPAL --- */
+        .conteneur {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: auto; /* Pousse le contenu vers le haut si nécessaire */
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        /* --- STYLE DE LA ZONE DE SAISIE --- */
+        .groupe-saisie {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        /* --- STYLE DES BOUTONS --- */
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-calculer {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .btn-calculer:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-effacer {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-effacer:hover {
+            background-color: #bd2130;
+        }
+
+        /* --- STYLE DE LA ZONE DE RÉSULTAT --- */
+        .affichage-resultat {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 5px solid #007BFF;
+            font-size: 18px;
+            font-weight: bold;
+            color: #495057;
+            min-height: 27px;
+        }
+
+        /* --- STYLE DU PIED DE PAGE DÉFILANT --- */
+        .pied-page-defilant {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="conteneur">
+        <h2>Compteur de Caractères </h2>
+
+        <div class="groupe-saisie">
+            <label for="zoneTexte">Saisir ou coller un texte :</label>
+            <textarea id="zoneTexte" placeholder="Écrivez quelque chose ici..."></textarea>
+        </div>
+
+        <div class="actions">
+            <button class="btn-calculer" id="boutonCalculer">Cliquer ici pour Compter</button>
+            <button class="btn-effacer" id="boutonEffacer">Effacer</button>
+        </div>
+
+        <div class="affichage-resultat" id="zoneResultat">
+            En attente de texte...
+        </div>
+    </div>
+
+    <!-- PIED DE PAGE AVEC TEXTE DÉFILANT -->
+    <div class="pied-page-defilant">
+        <!-- La balise <marquee> crée nativement l'effet de défilement horizontal continu -->
+        <marquee behavior="scroll" direction="left" scrollamount="6">
+            Projet JavaScript 2: Fonction Compter Caractères. ----- Conception: Juin 2026 ----- NEMPE MOBIO SYLVAIN, Etudiant en Web Developpement à GomyCode.
+        </marquee>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           1. SÉLECTION DES ÉLÉMENTS DE L'INTERFACE (DOM)
+           ========================================================================== */
+        const zoneTexte = document.getElementById('zoneTexte');
+        const boutonCalculer = document.getElementById('boutonCalculer');
+        const boutonEffacer = document.getElementById('boutonEffacer');
+        const zoneResultat = document.getElementById('zoneResultat');
+
+        /* ==========================================================================
+           2. FONCTION LOGIQUE DE COMPTAGE MODIFIÉE
+           ========================================================================== */
+        /**
+         * Calcule le nombre total de caractères en excluant tous les espaces.
+         * @param {string} chaine - Le texte brut à analyser.
+         * @returns {number} La quantité totale de caractères visibles restants.
+         */
+        function compterCaracteresSansEspaces(chaine) {
+            // L'expression régulière / /g (Regex) cible tous les espaces simples.
+            // On peut utiliser /\s/g si on souhaite aussi ignorer les tabulations et retours à la ligne.
+            // .replace(' ', '') ne remplacerait que le tout premier espace trouvé.
+            let chaineNettoyee = chaine.replace(/ /g, '');
+            
+            // Renvoie la longueur de la chaîne de texte une fois tous les espaces effacés
+            return chaineNettoyee.length;
+        }
+
+        /* ==========================================================================
+           3. GESTION DES ÉVÉNEMENTS (ACTIONS UTILISATEUR)
+           ========================================================================== */
+
+        // --- ACTION 1 : CLIC SUR LE BOUTON "COMPTER" ---
+        boutonCalculer.addEventListener('click', function() {
+            // Récupération de la saisie utilisateur actuelle
+            const texteAAnalyser = zoneTexte.value;
+
+            // Appel de la nouvelle fonction qui filtre les espaces vides
+            const totalCaracteres = compterCaracteresSansEspaces(texteAAnalyser);
+
+            // Construction de la réponse textuelle dynamique adaptée au résultat
+            let messageResultat = "";
+            if (texteAAnalyser.length === 0) {
+                messageResultat = "La zone de saisie est vide.";
+            } else if (totalCaracteres === 0) {
+                messageResultat = "Votre texte ne contient que des espaces.";
+            } else if (totalCaracteres === 1) {
+                messageResultat = "Votre texte contient exactement 1 caractère (hors espaces).";
+            } else {
+                messageResultat = `Votre texte contient : ${totalCaracteres} caractères (hors espaces).`;
+            }
+
+            // Affichage du résultat dans l'élément HTML approprié
+            zoneResultat.textContent = messageResultat;
+        });
+
+        // --- ACTION 2 : CLIC SUR LE BOUTON "EFFACER" ---
+        boutonEffacer.addEventListener('click', function() {
+            // Remise à zéro complète du champ de formulaire
+            zoneTexte.value = "";
+
+            // Réinitialisation de l'affichage textuel
+            zoneResultat.textContent = "En attente de texte...";
+
+            // Repositionnement automatique du curseur dans la boîte de saisie
+            zoneTexte.focus();
+        });
+    </script>
+
+</body>
+</html>

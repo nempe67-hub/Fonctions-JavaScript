@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur Min/Max - GomyCode</title>
+    <style>
+        /* --- Styles Généraux --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Conteneur Principal --- */
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            flex: 1; /* Permet de pousser le footer vers le bas */
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        /* --- Style du Formulaire --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        /* --- Boutons --- */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-calculer {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-calculer:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-effacer {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-effacer:hover {
+            background-color: #c0392b;
+        }
+
+        /* --- Zone de Résultats --- */
+        .result-box {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-left: 5px solid #3498db;
+            border-radius: 4px;
+            display: none; /* Caché par défaut, affiché en JS */
+        }
+
+        .result-item {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .result-item span {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        /* --- Pied de page avec texte défilant CSS --- */
+        footer {
+            background-color: #2c3e50;
+            color: #ffffff;
+            padding: 15px 0;
+            overflow: hidden; /* Cache le texte qui dépasse de l'écran */
+            position: relative;
+            width: 100%;
+        }
+
+        .defilement-conteneur {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .defilement-texte {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%; /* Démarre complètement à droite */
+            animation: defiler 20s linear infinite;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Animation de défilement de droite à gauche */
+        @keyframes defiler {
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+            100% {
+                transform: translate3d(-100%, 0, 0); /* Se déplace de toute sa largeur */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Recherche de Minimum et Maximum</h2>
+        
+        <!-- Formulaire sans rechargement de page -->
+        <form id="formCalculateur" onsubmit="event.preventDefault();">
+            <div class="form-group">
+                <label for="saisieNombres">Saisir des nombres :</label>
+                <input type="text" id="saisieNombres" placeholder="Ex: 12, -5, 45, 3.14, 0">
+                <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">
+                    Séparer chaque nombre par une virgule. Pour les nombres décimaux utiliser comme séparateur le point (.)
+                </small>
+            </div>
+
+            <div class="btn-group">
+                <!-- Premier bouton : Lancer le calcul -->
+                <button type="button" class="btn-calculer" onclick="executerCalcul()">Cliquer ici pour afficher le Min et le Max</button>
+                <!-- Second bouton : Vider les champs -->
+                <button type="button" class="btn-effacer" onclick="effacerFormulaire()">Effacer</button>
+            </div>
+        </form>
+
+        <!-- Conteneur d'affichage des résultats -->
+        <div id="zoneResultat" class="result-box">
+            <div class="result-item">Nombres valides détectés : <span id="resTableau"></span></div>
+            <div class="result-item">Valeur minimale : <span id="resMin"></span></div>
+            <div class="result-item">Valeur maximale : <span id="resMax"></span></div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer>
+        <div class="defilement-conteneur">
+            <div class="defilement-texte">
+                Projet JavaSript 2 - Fonction Minimum et Maximum. ------ Conception logiciel: Juin 2026 ------ NEMPE MOBIO SYLVAIN, Etudiant en Web Developpement à GomyCode
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /**
+         * Cherche la valeur minimale et maximale d'un tableau.
+         * @param {number[]} tableau 
+         * @returns {Object}
+         */
+        function trouverMinMax(tableau) {
+            if (tableau.length === 0) {
+                return { min: null, max: null };
+            }
+            return {
+                min: Math.min(...tableau),
+                max: Math.max(...tableau)
+            };
+        }
+
+        /**
+         * Récupère la saisie, la nettoie, appelle la fonction de calcul
+         * et injecte les résultats directement dans le document HTML.
+         */
+        function executerCalcul() {
+            // Récupération de l'élément input et de sa valeur textuelle
+            const inputSaisie = document.getElementById("saisieNombres");
+            const texteBrut = inputSaisie.value;
+
+            // Validation de base : si le champ est totalement vide
+            if (texteBrut.trim() === "") {
+                alert("Veuillez saisir au moins un nombre.");
+                return;
+            }
+
+            // Nettoyage et transformation de la chaîne en tableau de vrais nombres
+            const nombres = texteBrut
+                .split(",") // Découpe à la virgule
+                .map(num => parseFloat(num.trim())) // Supprime les espaces et convertit en nombre
+                .filter(num => !isNaN(num)); // Élimine les saisies invalides (ex: lettres)
+
+            // Validation secondaire : si aucun nombre valide n'a été extrait
+            if (nombres.length === 0) {
+                alert("Erreur : Aucun nombre valide n'a été trouvé. Vérifiez le format (ex: 5, 10, 15).");
+                return;
+            }
+
+            // Calcul informatique
+            const resultat = trouverMinMax(nombres);
+
+            // Mise à jour de l'affichage HTML avec les réponses
+            document.getElementById("resTableau").innerText = `[ ${nombres.join(", ")} ]`;
+            document.getElementById("resMin").innerText = resultat.min;
+            document.getElementById("resMax").innerText = resultat.max;
+
+            // Rendre le bloc de résultat visible à l'écran
+            document.getElementById("zoneResultat").style.display = "block";
+        }
+
+        /**
+         * Réinitialise le formulaire et masque le bloc de résultat.
+         */
+        function effacerFormulaire() {
+            // Vide le champ textuel de saisie
+            document.getElementById("saisieNombres").value = "";
+            
+            // Masque à nouveau la boîte de résultats
+            document.getElementById("zoneResultat").style.display = "none";
+            
+            // Nettoie le contenu texte des anciens résultats par sécurité
+            document.getElementById("resTableau").innerText = "";
+            document.getElementById("resMin").innerText = "";
+            document.getElementById("resMax").innerText = "";
+        }
+    </script>
+</body>
+</html>

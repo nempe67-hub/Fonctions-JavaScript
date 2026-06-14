@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet JavaScript 2 - Filtre de Tableau</title>
+    
+    <!-- ==========================================================================
+       ZONE DES STYLES CSS INTÉGRÉS
+       ========================================================================== -->
+    <style>
+        /* Styles généraux et réinitialisation des marges par défaut */
+        * {
+            box-sizing: border-box; /* Inclut la bordure et le padding dans la largeur totale */
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8; /* Fond gris-bleu très doux */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* S'assure que le body prend toute la hauteur de l'écran */
+            color: #334e68; /* Couleur de texte principale sombre */
+        }
+
+        /* Conteneur principal (La carte blanche centrale) */
+        .container {
+            background: #ffffff;
+            max-width: 600px;
+            margin: 50px auto; /* Centre le bloc horizontalement sur l'écran */
+            padding: 35px;
+            border-radius: 12px; /* Angles arrondis modernes */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Ombre douce */
+            flex: 1; /* Permet de pousser le footer tout en bas */
+        }
+
+        h1 {
+            color: #102a43;
+            font-size: 26px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #627d98;
+            font-size: 14px;
+            margin-bottom: 25px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* Formulaire et agencement des champs */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        /* Ligne regroupant la condition et la valeur cible côte à côte */
+        .condition-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .condition-row .form-group {
+            flex: 1; /* Partage équitablement l'espace disponible */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #243b53;
+            font-size: 15px;
+        }
+
+        /* Styles uniformes pour les inputs et le menu de sélection */
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #d9e2ec;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #102a43;
+            background-color: #fff;
+            transition: all 0.3s ease; /* Transition pour un effet fluide au clic */
+        }
+
+        /* Effet de focus quand l'utilisateur clique ou sélectionne un champ */
+        input:focus, select:focus {
+            border-color: #48bb78; /* Bordure verte */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2); /* Halo lumineux vert */
+        }
+
+        /* Groupe de boutons alignés côte à côte */
+        .button-group {
+            display: flex;
+            gap: 15px; /* Espace de 15px entre les deux boutons */
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1; /* Les boutons prennent la même largeur équitablement */
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase; /* Met le texte des boutons en majuscules */
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        /* Style spécifique du bouton "Afficher le résultat" (Vert) */
+        #btnResult {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        #btnResult:hover {
+            background-color: #38a169; /* Vert plus foncé au survol */
+        }
+
+        /* Style spécifique du bouton "Effacer" (Rouge) */
+        #btnReset {
+            background-color: #e53e3e;
+            color: white;
+        }
+
+        #btnReset:hover {
+            background-color: #c53030; /* Rouge plus foncé au survol */
+        }
+
+        /* Petit effet d'enfoncement dynamique au clic sur un bouton */
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Encadré d'affichage du résultat */
+        .result-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f0fff4; /* Fond vert très clair */
+            border-left: 5px solid #48bb78; /* Ligne verte décorative sur la gauche */
+            border-radius: 6px;
+        }
+
+        .result-box h3 {
+            color: #22543d;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        #resultText {
+            color: #2f855a;
+            font-size: 15px;
+            line-height: 1.6;
+            word-break: break-word; /* Évite que les longs tableaux dépassent du cadre */
+        }
+
+        /* Classe utilitaire CSS pour masquer un élément HTML */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Pied de page et mécanisme du texte défilant */
+        footer {
+            background-color: #102a43; /* Bleu nuit très foncé */
+            color: #f0f4f8;
+            overflow: hidden; /* Coupe tout texte qui dépasse de l'écran */
+            padding: 15px 0;
+            width: 100%;
+        }
+
+        .marquee {
+            white-space: nowrap; /* Force tout le texte à tenir sur une seule ligne */
+            display: inline-block;
+            padding-left: 100%; /* Démarre l'animation complètement hors-champ à droite */
+            animation: marqueeAnimation 25s linear infinite; /* Boucle infinie de 25 secondes */
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Définition des étapes de l'animation de défilement fluide */
+        @keyframes marqueeAnimation {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); } /* Déplace la ligne de texte vers l'extrême gauche */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Corps principal de l'application -->
+    <main class="container">
+        <h1>Filtrer un Tableau</h1>
+        <p class="subtitle">Entrez vos nombres séparés par des <strong>point-virgules (;)</strong>. Utilisez la <strong>virgule (,)</strong> pour les décimaux.</p>
+
+        <!-- Formulaire de saisie utilisateur -->
+        <form id="filterForm">
+            <!-- PREMIÈRE ZONE : Saisie de la liste de nombres -->
+            <div class="form-group">
+                <label for="arrayInput">1. Saisir les nombres à filtrer :</label>
+                <input type="text" id="arrayInput" placeholder="Ex: 10; 25,5; 5,75; 40; 12,2" required>
+            </div>
+
+            <!-- BLOC LIGNE : Regroupe le choix de la condition et le nombre cible -->
+            <div class="condition-row">
+                <!-- DEUXIÈME ZONE : Menu déroulant des conditions prédéfinies -->
+                <div class="form-group">
+                    <label for="operatorSelect">2. Condition :</label>
+                    <select id="operatorSelect">
+                        <option value="greater">Strictement supérieur à (&gt;)</option>
+                        <option value="greaterOrEqual">Supérieur ou égal à (&ge;)</option>
+                        <option value="less">Strictement inférieur à (&lt;)</option>
+                        <option value="lessOrEqual">Inférieur ou égal à (&le;)</option>
+                        <option value="equal">Égal à (=)</option>
+                        <option value="notEqual">Différent de (&ne;)</option>
+                    </select>
+                </div>
+
+                <!-- TROISIÈME ZONE : Saisie du nombre de comparaison -->
+                <div class="form-group">
+                    <label for="valueInput">3. Valeur cible :</label>
+                    <input type="text" id="valueInput" placeholder="Ex: 12,2" required>
+                </div>
+            </div>
+
+            <!-- Bloc regroupant les boutons requis -->
+            <div class="button-group">
+                <button type="button" id="btnResult">Afficher le résultat</button>
+                <button type="button" id="btnReset">Effacer</button>
+            </div>
+        </form>
+
+        <!-- Zone de résultat cachée initialement -->
+        <div id="resultContainer" class="result-box hidden">
+            <h3>Résultat du filtrage :</h3>
+            <p id="resultText"></p>
+        </div>
+    </main>
+
+    <!-- Pied de page contenant la signature défilante demandée -->
+    <footer>
+        <div class="marquee">
+            <span>Projet JavaScript 2: Fonction Filtre. --- Conception Juin 2026: NEMPE MOBIO SYLVAIN, Etudiant en Web Developpement à GomyCode.</span>
+        </div>
+    </footer>
+
+    <!-- ==========================================================================
+       ZONE DU SCRIPT JAVASCRIPT
+       ========================================================================== -->
+    <script>
+/**
+ * FONCTION LOGIQUE DE FILTRAGE (Fonction Pure requise par l'exercice)
+ * Cette fonction prend un tableau et lui applique un test logique.
+ * 
+ * @param {Array} array - Le tableau de nombres à traiter.
+ * @param {Function} conditionCallback - La fonction contenant le test (renvoie True ou False).
+ * @returns {Array} Un nouveau tableau contenant uniquement les éléments validés.
+ */
+function filtrerTableau(array, conditionCallback) {
+    // La méthode native .filter() parcourt le tableau et applique le test à chaque élément
+    return array.filter(conditionCallback);
+}
+
+/**
+ * FONCTION UTILITAIRE DE CONVERSION
+ * Transforme une chaîne de texte au format français (ex: "12,5") en vrai nombre informatique (ex: 12.5).
+ * 
+ * @param {string} textValue - Le texte saisi par l'utilisateur.
+ * @returns {number} Le nombre converti (ou NaN si la saisie est incorrecte).
+ */
+function formaterEnNombre(textValue) {
+    // .trim() enlève les espaces inutiles, .replace(',', '.') remplace la virgule par un point
+    return Number(textValue.trim().replace(',', '.'));
+}
+
+// ==========================================================================
+// SÉLECTION ET CIBLAGE DES ÉLÉMENTS HTML (DOM)
+// ==========================================================================
+const arrayInput = document.getElementById('arrayInput');
+const operatorSelect = document.getElementById('operatorSelect');
+const valueInput = document.getElementById('valueInput');
+const btnResult = document.getElementById('btnResult');
+const btnReset = document.getElementById('btnReset');
+const resultContainer = document.getElementById('resultContainer');
+const resultText = document.getElementById('resultText');
+
+
+// ==========================================================================
+// GESTIONNAIRE D'ÉVÉNEMENT : CLIC SUR LE BOUTON "AFFICHER LE RÉSULTAT"
+// ==========================================================================
+btnResult.addEventListener('click', () => {
+    // 1. Récupération des textes saisis sans les espaces aux extrémités
+    const rawArrayValue = arrayInput.value.trim();
+    const rawTargetValue = valueInput.value.trim();
+    const selectedOperator = operatorSelect.value;
+
+    // 2. Sécurité : On vérifie que les zones obligatoires ne sont pas vides
+    if (rawArrayValue === "" || rawTargetValue === "") {
+        alert("Attention : Veuillez remplir toutes les zones de saisie avant de continuer.");
+        return; // On arrête l'exécution ici si un champ est vide
+    }
+
+    // 3. Conversion et validation du nombre cible (le seuil de comparaison)
+    const targetNumber = formaterEnNombre(rawTargetValue);
+
+    if (isNaN(targetNumber)) {
+        alert("Erreur : La valeur cible doit être un nombre valide (ex: 15 ou 15,5).");
+        return;
+    }
+
+    // 4. Découpage et nettoyage de la liste de nombres à filtrer
+    // On sépare le texte à chaque fois qu'on rencontre un point-virgule (;)
+    const rawElementsArray = rawArrayValue.split(';');
+    const initialArray = [];
+
+    // Boucle de traitement pour nettoyer chaque élément extrait
+    for (let i = 0; i < rawElementsArray.length; i++) {
+        const currentElement = rawElementsArray[i].trim();
+        
+        if (currentElement !== "") { // On ignore les morceaux vides (ex: deux points-virgules d'affilée)
+            const parsedNumber = formaterEnNombre(currentElement);
+            
+            // Si c'est un nombre valide, on l'ajoute à notre tableau de calcul
+            if (!isNaN(parsedNumber)) {
+                initialArray.push(parsedNumber);
+            }
+        }
+    }
+
+    // Sécurité : On vérifie qu'on a bien extrait au moins un nombre valide
+    if (initialArray.length === 0) {
+        alert("Erreur : Aucun nombre valide n'a été détecté. Vérifiez le format (Ex: 12; 14,5; 8).");
+        return;
+    }
+
+    // 5. Exécution de la fonction de filtrage selon l'option choisie dans le menu déroulant
+    const filteredResult = filtrerTableau(initialArray, (element) => {
+        switch (selectedOperator) {
+            case 'greater':
+                return element > targetNumber;        // Strictement supérieur
+            case 'greaterOrEqual':
+                return element >= targetNumber;       // Supérieur ou égal
+            case 'less':
+                return element < targetNumber;         // Strictement inférieur
+            case 'lessOrEqual':
+                return element <= targetNumber;        // Inférieur ou égal
+            case 'equal':
+                return element === targetNumber;       // Strictement égal
+            case 'notEqual':
+                return element !== targetNumber;       // Différent de
+            default:
+                return false;
+        }
+    });
+
+    // 6. Préparation de l'affichage final (on remet les points en virgules pour l'utilisateur)
+    const displayInitial = initialArray.map(n => n.toString().replace('.', ',')).join(' ; ');
+    
+    let displayFiltered;
+    if (filteredResult.length > 0) {
+        displayFiltered = filteredResult.map(n => n.toString().replace('.', ',')).join(' ; ');
+    } else {
+        displayFiltered = "Aucun élément ne correspond à cette condition";
+    }
+
+    // Récupération du texte de la condition sélectionnée pour le bilan (ex: "Strictement supérieur à")
+    const operatorText = operatorSelect.options[operatorSelect.selectedIndex].text;
+
+    // 7. Injection dynamique des résultats dans le code HTML de la page
+    resultText.innerHTML = `<strong>Tableau d'origine :</strong> [ ${displayInitial} ]<br><br>
+                            <strong>Filtre appliqué :</strong> ${operatorText} ${rawTargetValue}<br><br>
+                            <strong>Résultat obtenu :</strong> <span style="color: #48bb78; font-weight: bold;">[ ${displayFiltered} ]</span>`;
+    
+    // Rendre l'encadré visible en lui retirant la classe CSS cachée
+    resultContainer.classList.remove('hidden');
+});
+
+
+// ==========================================================================
+// GESTIONNAIRE D'ÉVÉNEMENT : CLIC SUR LE BOUTON "EFFACER"
+// ==========================================================================
+btnReset.addEventListener('click', () => {
+    // Réinitialisation des formulaires et des valeurs
+    arrayInput.value = '';
+    valueInput.value = '';
+    operatorSelect.selectedIndex = 0; // Remet le menu déroulant sur la première option
+    
+    // Vidage du texte de résultat
+    resultText.textContent = '';
+    
+    // Masquage de l'encadré de résultat en lui ré-ajoutant la classe 'hidden'
+    resultContainer.classList.add('hidden');
+});
+</script>
+</body>
+</html>

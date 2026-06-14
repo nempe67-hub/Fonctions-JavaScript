@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcul de la Factorielle</title>
+    <style>
+        /* Style général de la page */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Conteneur principal du formulaire */
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        /* Style des champs et labels */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        /* Groupe de boutons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-calc {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-calc:hover {
+            background-color: #45a049;
+        }
+
+        .btn-clear {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background-color: #da190b;
+        }
+
+        /* Zone d'affichage du résultat */
+        .result-box {
+            background-color: #eef2f3;
+            padding: 15px;
+            border-left: 5px solid #4CAF50;
+            border-radius: 4px;
+            font-size: 18px;
+            word-wrap: break-word;
+            min-height: 25px;
+        }
+
+        .result-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Pied de page avec texte défilant */
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .marquee {
+            display: inline-block;
+            padding-left: 100%;
+            animation: defilement 25s linear infinite;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes defilement {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Calculateur de Factorielle</h2>
+        
+        <div class="form-group">
+            <label for="nombre">Saisir un nombre entier positif :</label>
+            <input type="number" id="nombre" min="0" placeholder="Ex: 5">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-calc" onclick="afficherFactorielle()">Calculer</button>
+            <button class="btn-clear" onclick="effacerFormulaire()">Effacer</button>
+        </div>
+
+        <div class="result-box">
+            <span class="result-title">Résultat : </span>
+            <span id="zoneResultat">---</span>
+        </div>
+    </div>
+
+    <footer>
+        <div class="marquee">
+            Projet JavaScript 2: Fonction Factorielle d'un nombre. ------ Conception : Juin 2026 ------ NEMPE MOBIO SYLVAIN, Etudiant en Web Developpement à GomyCode.
+        </div>
+    </footer>
+
+    <script>
+        // Fonction mathématique pour calculer la factorielle
+        function calculerFactorielle(n) {
+            if (n < 0) return "Impossible (nombre négatif)";
+            if (n === 0 || n === 1) return 1;
+            
+            let resultat = 1;
+            for (let i = 2; i <= n; i++) {
+                resultat *= i;
+            }
+            return resultat;
+        }
+
+        // Fonction pour gérer l'affichage et le formatage
+        function afficherFactorielle() {
+            const inputNombre = document.getElementById('nombre').value;
+            const zoneResultat = document.getElementById('zoneResultat');
+
+            // Vérification si le champ est vide
+            if (inputNombre === "") {
+                zoneResultat.textContent = "Veuillez saisir un nombre.";
+                zoneResultat.style.color = "#f44336";
+                return;
+            }
+
+            const nombre = parseInt(inputNombre, 10);
+
+            // Gestion des cas d'erreur de saisie
+            if (nombre < 0) {
+                zoneResultat.textContent = "Le nombre doit être positif ou nul.";
+                zoneResultat.style.color = "#f44336";
+                return;
+            }
+
+            // Javascript perd en précision au-delà de 170 (Infinity)
+            if (nombre > 170) {
+                zoneResultat.textContent = "Nombre trop grand (Infini).";
+                zoneResultat.style.color = "#f44336";
+                return;
+            }
+
+            const res = calculerFactorielle(nombre);
+
+            // Formatage avec un espace comme séparateur de milliers
+            const formatResultat = res.toLocaleString('fr-FR');
+
+            zoneResultat.textContent = `${nombre}! = ${formatResultat}`;
+            zoneResultat.style.color = "#333";
+        }
+
+        // Fonction pour réinitialiser les champs
+        function effacerFormulaire() {
+            document.getElementById('nombre').value = "";
+            document.getElementById('zoneResultat').textContent = "---";
+            document.getElementById('zoneResultat').style.color = "#333";
+        }
+    </script>
+
+</body>
+</html>

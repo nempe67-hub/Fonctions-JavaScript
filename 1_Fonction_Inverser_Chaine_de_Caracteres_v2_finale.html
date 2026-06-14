@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverser une chaîne</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 50px; 
+            padding-bottom: 60px; /* Évite que la signature masque le contenu en bas de page */
+        }
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+        }
+        input[type="text"] { 
+            width: 300px; 
+            padding: 8px; 
+        }
+        /* Conteneur pour aligner les boutons côte à côte */
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button { 
+            padding: 8px 15px; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold;
+            border-radius: 4px;
+        }
+        .btn-inverser {
+            background: #007BFF; 
+        }
+        .btn-inverser:hover { 
+            background: #0056b3; 
+        }
+        .btn-effacer {
+            background: #dc3545;
+        }
+        .btn-effacer:hover {
+            background: #bd2130;
+        }
+        #resultat { 
+            margin-top: 20px; 
+            font-weight: bold; 
+            color: green; 
+        }
+        /* --- STYLE DU PIED DE PAGE DÉFILANT --- */
+        .pied-page-defilant {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Outil d'inversion de Chaîne de Caractères</h2>
+
+    <!-- Formulaire HTML -->
+    <form id="formulaireInversion">
+        <div class="form-group">
+            <label for="texteUtilisateur">Entrer un mot ou une phrase :</label>
+            <input type="text" id="texteUtilisateur" placeholder="Ex: J'apprends le JavaScript à GomyCode" required>
+        </div>
+        
+        <div class="actions">
+            <!-- Bouton principal de soumission -->
+            <button type="submit" class="btn-inverser">Cliquer ici pour Inverser </button>
+            <!-- Bouton pour effacer la de Chaîne de Caractères (type="button" pour éviter de soumettre le formulaire) -->
+            <button type="button" id="boutonEffacer" class="btn-effacer">Effacer</button>
+        </div>
+    </form>
+
+    <!-- Zone d'affichage du résultat -->
+    <div id="resultat"></div>
+
+    <!-- PIED DE PAGE AVEC TEXTE DÉFILANT -->
+    <div class="pied-page-defilant">
+        <!-- La balise <marquee> fait défiler le texte de droite à gauche continuellement -->
+        <marquee behavior="scroll" direction="left" scrollamount="6">
+            Projet JavaScript 2: Fonction Inverser Chaîne de Caractères. ----- Conception: Juin 2026 ----- NEMPE MOBIO SYLVAIN, Etudiant en Web Developpement à GomyCode.
+        </marquee>
+    </div>
+
+    <script>
+        // 1. Sélection des éléments HTML du DOM (Document Object Model)
+        const formulaire = document.getElementById('formulaireInversion');
+        const champTexte = document.getElementById('texteUtilisateur');
+        const zoneResultat = document.getElementById('resultat');
+        const boutonEffacer = document.getElementById('boutonEffacer');
+
+        // 2. Fonction logique d'inversion du texte
+        function inverserChaine(chaine) {
+            return chaine.split('').reverse().join('');
+        }
+
+        // 3. Écouteur d'événement sur la soumission du formulaire (Bouton Inverser)
+        formulaire.addEventListener('submit', function(evenement) {
+            // Empêche le rechargement automatique de la page lors de la soumission
+            evenement.preventDefault();
+
+            // Récupère la valeur saisie par l'utilisateur
+            const texteSaisi = champTexte.value;
+
+            // Applique la fonction d'inversion
+            const texteInverse = inverserChaine(texteSaisi);
+
+            // Injecte le résultat directement dans la page HTML
+            zoneResultat.textContent = `Texte inversé : ${texteInverse}`;
+        });
+
+        // 4. Écouteur d'événement sur le bouton "Effacer"
+        boutonEffacer.addEventListener('click', function() {
+            // Vide le champ de saisie de texte
+            champTexte.value = "";
+
+            // Efface le texte affiché dans la zone de résultat
+            zoneResultat.textContent = "";
+
+            // Remet automatiquement le curseur dans le champ de saisie
+            champTexte.focus();
+        });
+    </script>
+
+</body>
+</html>
